@@ -148,64 +148,29 @@ git commit -m "feat: React Query Providers와 공통 delay 유틸 추가"
 
 ### Task 3: 공통 예제 페이지 레이아웃 컴포넌트
 
+> **설계 변경 (2026-08-02, 사용자 피드백 반영):** 원래 이 컴포넌트는 제목/설명/"문제 상황"·"해결됨" 배지/bad-good 전환 링크를 렌더링했으나, 영상 녹화 시 각 페이지가 튜토리얼처럼 보이지 않고 실제 제품 화면처럼 보여야 한다는 피드백에 따라 아래처럼 최소 래퍼로 축소했다(실제 반영 커밋: `8b64a36`). **아래 코드가 최신 기준이며, 이 문서의 Task 4~7 코드 블록에 남아있는 `slug`/`variant`/`title`/`description` props 사용은 과거 버전이므로 무시한다** — 실제로 구현된 최신 코드는 저장소의 해당 파일을 참고할 것. Task 8부터는 처음부터 아래 최신 시그니처로 작성한다.
+
 **Files:**
 - Create: `components/example-page-layout.tsx`
 
 **Interfaces:**
-- Consumes: `components/ui/badge.tsx` (Task 1)
-- Produces: `ExamplePageLayout({ slug, title, description, variant, children })` — 이후 모든 예제 페이지(Task 5~13)에서 사용.
+- Produces: `ExamplePageLayout({ children })` — 이후 모든 예제 페이지(Task 4~13)에서 사용. 각 페이지는 레이아웃에 제목을 넘기지 않고, 페이지 본문 안에 직접 실제 화면다운 `<h1 className="text-2xl font-semibold">...</h1>`을 둔다(예: "설정", "할 일 목록", "내 프로필").
 
 - [ ] **Step 1: `components/example-page-layout.tsx` 작성**
 
 ```tsx
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
 
 type ExamplePageLayoutProps = {
-  slug: string
-  title: string
-  description: string
-  variant: 'bad' | 'good'
   children: React.ReactNode
 }
 
-export function ExamplePageLayout({
-  slug,
-  title,
-  description,
-  variant,
-  children,
-}: ExamplePageLayoutProps) {
-  const isBad = variant === 'bad'
-
+export function ExamplePageLayout({ children }: ExamplePageLayoutProps) {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-10">
-      <div className="flex flex-col gap-3">
-        <Link href="/" className="text-sm text-muted-foreground hover:underline">
-          ← 홈으로
-        </Link>
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold">{title}</h1>
-          <Badge variant={isBad ? 'destructive' : 'default'}>
-            {isBad ? '문제 상황' : '해결됨'}
-          </Badge>
-        </div>
-        <p className="text-muted-foreground">{description}</p>
-        <div className="flex gap-4 text-sm">
-          <Link
-            href={`/examples/${slug}/bad`}
-            className={isBad ? 'font-semibold underline' : 'text-muted-foreground hover:underline'}
-          >
-            문제 상황
-          </Link>
-          <Link
-            href={`/examples/${slug}/good`}
-            className={!isBad ? 'font-semibold underline' : 'text-muted-foreground hover:underline'}
-          >
-            해결 방법
-          </Link>
-        </div>
-      </div>
+      <Link href="/" className="text-sm text-muted-foreground hover:underline">
+        ← 홈
+      </Link>
       {children}
     </div>
   )
