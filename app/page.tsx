@@ -1,65 +1,91 @@
-import Image from "next/image";
+import Link from "next/link";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+const EXAMPLES = [
+  {
+    slug: "refetch-window-focus",
+    title: "탭 포커스 refetch와 RHF 폼 덮어씌움",
+    description:
+      "refetchOnWindowFocus 기본값 때문에 입력 중이던 폼이 서버 값으로 덮어써지는 문제",
+  },
+  {
+    slug: "refetch-on-mount",
+    title: "refetchOnMount와 invalidateQueries",
+    description:
+      "비활성 쿼리를 invalidate해도 refetchType 설정에 따라 갱신 여부가 달라지는 문제",
+  },
+  {
+    slug: "is-pending-vs-loading",
+    title: "isPending vs isLoading",
+    description: "enabled 옵션과 함께 쓸 때 안전하게 data에 접근하는 방법",
+  },
+  {
+    slug: "data-availability-first",
+    title: "data-availability-first 패턴",
+    description:
+      "백그라운드 refetch 실패 시 캐시된 데이터를 유지하고 토스트로만 알리는 패턴",
+  },
+  {
+    slug: "keep-previous-data",
+    title: "keepPreviousData",
+    description: "페이지네이션 시 로딩 화면 깜빡임을 없애는 방법",
+  },
+  {
+    slug: "mutate-vs-mutate-async",
+    title: "mutate vs mutateAsync",
+    description: "RHF 제출 버튼의 disabled 상태가 응답 전에 풀려버리는 문제",
+  },
+  {
+    slug: "invalidate-queries-await",
+    title: "invalidateQueries await",
+    description: "onSuccess에서 invalidateQueries를 반환하지 않아 생기는 타이밍 문제",
+  },
+  {
+    slug: "callback-placement",
+    title: "뮤테이션 콜백 위치",
+    description: "언마운트 이후에도 실행되는 콜백과 실행되지 않는 콜백의 차이",
+  },
+  {
+    slug: "global-invalidate",
+    title: "전역 invalidate",
+    description: "MutationCache로 모든 쿼리를 자동 invalidate하는 패턴",
+  },
+] as const;
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-10">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-semibold">React Query 예제 갤러리</h1>
+        <p className="text-muted-foreground">
+          각 카드에서 문제 상황과 해결 방법을 비교해서 확인할 수 있습니다.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {EXAMPLES.map((example) => (
+          <Card key={example.slug}>
+            <CardHeader>
+              <CardTitle>{example.title}</CardTitle>
+              <CardDescription>{example.description}</CardDescription>
+            </CardHeader>
+            <CardFooter className="flex gap-2">
+              <Button asChild variant="destructive" size="sm">
+                <Link href={`/examples/${example.slug}/bad`}>문제 상황 보기</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href={`/examples/${example.slug}/good`}>해결 방법 보기</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
