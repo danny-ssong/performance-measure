@@ -16,7 +16,8 @@
 - `bad`/`good` 페이지는 하나의 전역 `QueryClient`(루트 `Providers`)를 공유하므로, 캐시 오염을 막기 위해 모든 `queryKey`의 두 번째 요소에 `'bad'` 또는 `'good'`을 리터럴로 박아넣는다(예: `['refetch-window-focus', 'bad', 'settings']`). `global-invalidate` 예제만 페이지별 로컬 `QueryClient`를 쓰므로 이 규칙에서 예외.
 - 각 예제의 mock API는 모듈 스코프 변수로 상태를 유지하는 in-memory 저장소이며, 서버(dev server) 재시작 시 초기화된다. 여러 route.ts 파일이 상태를 공유해야 하면 같은 폴더에 `store.ts`(HTTP 메서드가 아닌 일반 모듈)를 두고 각 `route.ts`에서 import한다 — Next.js는 `route.ts`에서 HTTP 메서드 핸들러 외의 값을 export하는 것을 허용하지 않는다.
 - shadcn 컴포넌트는 `components/ui/`에 CLI로 생성된 그대로 두고 수정하지 않는다.
-- 이 프로젝트의 shadcn `init -d` 프리셋은 Radix 대신 `@base-ui/react`를 사용한다. 따라서 `Button`/`DialogTrigger` 등을 다른 엘리먼트로 합성할 때는 Radix의 `asChild` + children 패턴이 아니라 Base UI의 `render` prop을 쓴다 — 예: `<Button render={<Link href="/foo" />}>텍스트</Button>` (바깥 컴포넌트의 children이 최종 엘리먼트의 내용이 되고, `render`에 넘긴 엘리먼트가 태그/속성을 제공한다). `asChild`로 작성하면 컴파일도 되고 동작도 하는 것처럼 보이지만 실제로는 두 엘리먼트가 중첩(예: `<button><a>...</a></button>`)되는 것이므로 절대 쓰지 않는다.
+- 이 프로젝트의 shadcn `init -d` 프리셋은 Radix 대신 `@base-ui/react`를 사용한다. 따라서 `Button`/`DialogTrigger` 등을 다른 엘리먼트로 합성할 때는 Radix의 `asChild` + children 패턴이 아니라 Base UI의 `render` prop을 쓴다 — 예: `<DialogTrigger render={<Button />}>텍스트</DialogTrigger>` (바깥 컴포넌트의 children이 최종 엘리먼트의 내용이 되고, `render`에 넘긴 엘리먼트가 태그/속성을 제공한다). `asChild`로 작성하면 컴파일도 되고 동작도 하는 것처럼 보이지만 실제로는 두 엘리먼트가 중첩(예: `<button><a>...</a></button>`)되는 것이므로 절대 쓰지 않는다.
+- **링크를 버튼처럼 보이게 스타일링할 때는 `Button`으로 감싸지 않는다.** Base UI의 `Button`은 버튼 시맨틱을 강제하도록 설계되어 있어 링크 용도로 감싸는 것을 문서에서 명시적으로 권장하지 않으며(개발 모드 콘솔 경고 발생, `type="button"` 속성이 `<a>`에 그대로 남는 등 부작용 있음), 실제로도 `nativeButton={false}`를 추가로 지정해야 경고가 사라진다. 대신 `@/components/ui/button`이 내보내는 `buttonVariants(...)` 헬퍼로 얻은 클래스명을 `Link`에 직접 적용한다 — 예: `<Link href="/foo" className={buttonVariants({ variant: "destructive", size: "sm" })}>텍스트</Link>`.
 
 ---
 
@@ -245,7 +246,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 const EXAMPLES = [
   {
@@ -315,19 +316,18 @@ export default function Home() {
               <CardDescription>{example.description}</CardDescription>
             </CardHeader>
             <CardFooter className="flex gap-2">
-              <Button
-                render={<Link href={`/examples/${example.slug}/bad`} />}
-                variant="destructive"
-                size="sm"
+              <Link
+                href={`/examples/${example.slug}/bad`}
+                className={buttonVariants({ variant: "destructive", size: "sm" })}
               >
                 문제 상황 보기
-              </Button>
-              <Button
-                render={<Link href={`/examples/${example.slug}/good`} />}
-                size="sm"
+              </Link>
+              <Link
+                href={`/examples/${example.slug}/good`}
+                className={buttonVariants({ size: "sm" })}
               >
                 해결 방법 보기
-              </Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}
@@ -1926,7 +1926,7 @@ import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ExamplePageLayout } from "@/components/example-page-layout";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export default function CallbackPlacementBadPage() {
   const { mutate, isPending } = useMutation({
@@ -1952,9 +1952,9 @@ export default function CallbackPlacementBadPage() {
         <Button type="button" onClick={() => mutate()} disabled={isPending}>
           저장 (2초 소요)
         </Button>
-        <Button type="button" variant="outline" render={<Link href="/" />}>
+        <Link href="/" className={buttonVariants({ variant: "outline" })}>
           다른 페이지로 이동
-        </Button>
+        </Link>
       </div>
     </ExamplePageLayout>
   );
@@ -1972,7 +1972,7 @@ import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ExamplePageLayout } from "@/components/example-page-layout";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export default function CallbackPlacementGoodPage() {
   const { mutate, isPending } = useMutation({
@@ -2003,9 +2003,9 @@ export default function CallbackPlacementGoodPage() {
         <Button type="button" onClick={handleSave} disabled={isPending}>
           저장 (2초 소요)
         </Button>
-        <Button type="button" variant="outline" render={<Link href="/" />}>
+        <Link href="/" className={buttonVariants({ variant: "outline" })}>
           다른 페이지로 이동
-        </Button>
+        </Link>
       </div>
     </ExamplePageLayout>
   );

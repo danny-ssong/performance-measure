@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 const EXAMPLES = [
   {
@@ -76,19 +76,18 @@ export default function Home() {
               <CardDescription>{example.description}</CardDescription>
             </CardHeader>
             <CardFooter className="flex gap-2">
-              <Button
-                render={<Link href={`/examples/${example.slug}/bad`} />}
-                variant="destructive"
-                size="sm"
+              <Link
+                href={`/examples/${example.slug}/bad`}
+                className={buttonVariants({ variant: "destructive", size: "sm" })}
               >
                 문제 상황 보기
-              </Button>
-              <Button
-                render={<Link href={`/examples/${example.slug}/good`} />}
-                size="sm"
+              </Link>
+              <Link
+                href={`/examples/${example.slug}/good`}
+                className={buttonVariants({ size: "sm" })}
               >
                 해결 방법 보기
-              </Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}
