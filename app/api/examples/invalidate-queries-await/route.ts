@@ -20,3 +20,9 @@ export async function POST(request: Request) {
   todos = [...todos, todo];
   return NextResponse.json(todo);
 }
+
+export async function DELETE() {
+  todos = [];
+  nextId = 1;
+  return NextResponse.json({ ok: true });
+}

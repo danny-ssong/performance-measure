@@ -55,6 +55,19 @@ export default function InvalidateQueriesAwaitBadPage() {
     });
   };
 
+  const { mutate: clearAll, isPending: isClearing } = useMutation({
+    mutationFn: async () => {
+      await fetch("/api/examples/invalidate-queries-await", {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["invalidate-queries-await", "bad", "todos"],
+      });
+    },
+  });
+
   return (
     <ExamplePageLayout>
       <div className="flex items-center justify-between">
@@ -81,6 +94,16 @@ export default function InvalidateQueriesAwaitBadPage() {
           </li>
         ))}
       </ul>
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => clearAll()}
+          disabled={isClearing}
+        >
+          전체 삭제
+        </Button>
+      </div>
     </ExamplePageLayout>
   );
 }
