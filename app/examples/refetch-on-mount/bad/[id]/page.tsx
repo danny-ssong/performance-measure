@@ -51,20 +51,24 @@ export default function RefetchOnMountBadDetailPage({
     });
   };
 
-  if (!data) return <p>불러오는 중...</p>;
-
   return (
     <ExamplePageLayout>
-      <h1 className="text-2xl font-semibold">할 일 수정</h1>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="title">제목</Label>
-          <Input id="title" name="title" defaultValue={data.title} />
-        </div>
-        <Button type="submit" disabled={isPending}>
-          저장하고 목록으로
-        </Button>
-      </form>
+      {!data ? (
+        <p>불러오는 중...</p>
+      ) : (
+        <>
+          <h1 className="text-2xl font-semibold">할 일 수정</h1>
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="title">제목</Label>
+              <Input id="title" name="title" defaultValue={data.title} />
+            </div>
+            <Button type="submit" disabled={isPending}>
+              저장하고 목록으로
+            </Button>
+          </form>
+        </>
+      )}
     </ExamplePageLayout>
   );
 }

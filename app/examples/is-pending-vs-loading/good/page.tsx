@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 type Profile = { id: number; name: string };
 
 export default function IsPendingVsLoadingGoodPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const { data, isPending, isError } = useQuery<Profile>({
     queryKey: ["is-pending-vs-loading", "good", "profile"],

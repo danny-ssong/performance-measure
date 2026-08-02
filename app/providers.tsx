@@ -17,6 +17,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
             }
           },
         }),
+        defaultOptions: {
+          queries: {
+            retry: false,
+          },
+        },
       }),
   )
 

@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 type Profile = { id: number; name: string };
 
 export default function IsPendingVsLoadingBadPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const { data, isLoading } = useQuery<Profile>({
     queryKey: ["is-pending-vs-loading", "bad", "profile"],
@@ -35,7 +35,7 @@ export default function IsPendingVsLoadingBadPage() {
       {isLoading ? (
         <Skeleton className="h-6 w-40" />
       ) : (
-        <p>이름: {data?.name ?? "(아무것도 표시되지 않음)"}</p>
+        <p>이름: {data?.name ?? "-"}</p>
       )}
     </ExamplePageLayout>
   );

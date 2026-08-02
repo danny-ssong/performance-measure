@@ -524,12 +524,13 @@ Expected: 에러 없이 성공.
 
 Run: `npm run dev`
 
-1. `/examples/refetch-window-focus/bad` 접속, 메모 필드에 아무 텍스트 입력
-2. "다른 사람이 서버 데이터를 변경했습니다" 버튼 클릭
-3. 다른 브라우저 탭으로 이동했다가 이 탭으로 돌아옴
-4. Expected: 메모 필드가 입력했던 텍스트가 아닌 서버가 변경한 값으로 바뀜
-5. `/examples/refetch-window-focus/good`에서 동일하게 재현
-6. Expected: 탭 전환 후에도 입력했던 텍스트가 그대로 유지됨
+1. `/examples/refetch-window-focus/bad`를 브라우저 탭 두 개에 각각 열기
+2. 탭 A에서 메모 필드에 아무 텍스트나 입력하되 저장하지 않음
+3. 탭 B에서 메모 필드에 다른 텍스트를 입력하고 저장
+4. 탭 A로 돌아와 포커스를 줌 (탭 전환)
+5. Expected: 탭 A에 입력 중이던 텍스트가 탭 B에서 저장한 값으로 덮어써짐
+6. `/examples/refetch-window-focus/good`에서 동일하게 재현
+7. Expected: 탭 A로 돌아와도 입력 중이던 텍스트가 그대로 유지됨(good 페이지는 refetchOnWindowFocus:false)
 
 - [ ] **Step 6: Commit**
 

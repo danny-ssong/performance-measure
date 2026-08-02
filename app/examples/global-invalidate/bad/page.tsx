@@ -55,6 +55,7 @@ function SettingsForm() {
 
   return (
     <div className="flex flex-col gap-2">
+      <p className="text-sm text-muted-foreground">현재 테마: {data?.theme ?? "..."}</p>
       <Label htmlFor="theme">테마</Label>
       <Input
         id="theme"

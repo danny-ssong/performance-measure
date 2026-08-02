@@ -58,7 +58,7 @@ export default function InvalidateQueriesAwaitBadPage() {
   return (
     <ExamplePageLayout>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">체크리스트</h1>
+        <h1 className="text-2xl font-semibold">메모</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger render={<Button type="button" />}>추가</DialogTrigger>
           <DialogContent>

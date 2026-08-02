@@ -32,7 +32,7 @@ export default function MutateVsMutateAsyncBadPage() {
 
   return (
     <ExamplePageLayout>
-      <h1 className="text-2xl font-semibold">계정 설정</h1>
+      <h1 className="text-2xl font-semibold">닉네임 변경</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">이름</Label>

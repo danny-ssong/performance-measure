@@ -14,8 +14,8 @@ const EXAMPLES = [
   { slug: "is-pending-vs-loading", title: "내 프로필" },
   { slug: "data-availability-first", title: "알림" },
   { slug: "keep-previous-data", title: "상품 목록" },
-  { slug: "mutate-vs-mutate-async", title: "계정 설정" },
-  { slug: "invalidate-queries-await", title: "체크리스트" },
+  { slug: "mutate-vs-mutate-async", title: "닉네임 변경" },
+  { slug: "invalidate-queries-await", title: "메모" },
   { slug: "callback-placement", title: "환경설정" },
   { slug: "global-invalidate", title: "대시보드" },
 ] as const;
