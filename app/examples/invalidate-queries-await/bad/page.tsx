@@ -94,16 +94,15 @@ export default function InvalidateQueriesAwaitBadPage() {
           </li>
         ))}
       </ul>
-      <div className="flex justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => clearAll()}
-          disabled={isClearing}
-        >
-          전체 삭제
-        </Button>
-      </div>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => clearAll()}
+        disabled={isClearing}
+        className="fixed right-6 bottom-6"
+      >
+        전체 삭제
+      </Button>
     </ExamplePageLayout>
   );
 }
