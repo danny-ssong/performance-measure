@@ -1242,7 +1242,7 @@ git commit -m "feat: data-availability-first 예제 추가"
 import { NextResponse } from "next/server";
 import { delay } from "@/lib/delay";
 
-const ALL_ITEMS = Array.from({ length: 20 }, (_, i) => `아이템 ${i + 1}`);
+const ALL_ITEMS = Array.from({ length: 20 }, (_, i) => `상품 ${i + 1}`);
 const PAGE_SIZE = 5;
 
 export async function GET(request: Request) {
@@ -1282,12 +1282,8 @@ export default function KeepPreviousDataBadPage() {
   });
 
   return (
-    <ExamplePageLayout
-      slug="keep-previous-data"
-      variant="bad"
-      title="keepPreviousData"
-      description="페이지를 넘길 때마다 이전 데이터가 사라지고 로딩 화면이 깜빡입니다."
-    >
+    <ExamplePageLayout>
+      <h1 className="text-2xl font-semibold">상품 목록</h1>
       {isPending ? (
         <p>불러오는 중...</p>
       ) : (
@@ -1352,12 +1348,8 @@ export default function KeepPreviousDataGoodPage() {
   });
 
   return (
-    <ExamplePageLayout
-      slug="keep-previous-data"
-      variant="good"
-      title="keepPreviousData"
-      description="placeholderData: keepPreviousData를 쓰면 새 페이지를 불러오는 동안 이전 페이지 데이터가 그대로 유지됩니다."
-    >
+    <ExamplePageLayout>
+      <h1 className="text-2xl font-semibold">상품 목록</h1>
       {!data ? (
         <p>불러오는 중...</p>
       ) : (
