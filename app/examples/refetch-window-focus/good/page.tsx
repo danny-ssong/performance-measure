@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExamplePageLayout } from "@/components/example-page-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,24 +13,9 @@ type Settings = {
   memo: string;
 };
 
-function SimulateExternalChangeButton() {
-  const handleClick = async () => {
-    await fetch("/api/examples/refetch-window-focus", {
-      method: "PATCH",
-      body: JSON.stringify({
-        memo: `관리자가 ${new Date().toLocaleTimeString()}에 변경함`,
-      }),
-    });
-  };
-
-  return (
-    <Button type="button" variant="secondary" onClick={handleClick}>
-      🧑‍💻 다른 사람이 서버 데이터를 변경했습니다
-    </Button>
-  );
-}
-
 export default function RefetchWindowFocusGoodPage() {
+  const queryClient = useQueryClient();
+
   const { data } = useQuery<Settings>({
     queryKey: ["refetch-window-focus", "good", "settings"],
     queryFn: async () => {
@@ -42,14 +27,28 @@ export default function RefetchWindowFocusGoodPage() {
 
   const form = useForm<Settings>({ values: data });
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (values: Settings) => {
+      const res = await fetch("/api/examples/refetch-window-focus", {
+        method: "PATCH",
+        body: JSON.stringify(values),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["refetch-window-focus", "good", "settings"],
+      });
+    },
+  });
+
   return (
-    <ExamplePageLayout
-      slug="refetch-window-focus"
-      variant="good"
-      title="탭 포커스 refetch와 RHF 폼 덮어씌움"
-      description="refetchOnWindowFocus: false로 설정하면 탭을 전환했다가 돌아와도 입력 중이던 값이 유지됩니다."
-    >
-      <form className="flex flex-col gap-4">
+    <ExamplePageLayout>
+      <h1 className="text-2xl font-semibold">설정</h1>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={form.handleSubmit((values) => mutate(values))}
+      >
         <div className="flex flex-col gap-2">
           <Label htmlFor="companyName">회사명</Label>
           <Input id="companyName" {...form.register("companyName")} />
@@ -58,14 +57,10 @@ export default function RefetchWindowFocusGoodPage() {
           <Label htmlFor="memo">메모</Label>
           <Textarea id="memo" rows={6} {...form.register("memo")} />
         </div>
+        <Button type="submit" disabled={isPending}>
+          저장
+        </Button>
       </form>
-      <div className="flex flex-col gap-3 rounded-md border border-dashed p-4">
-        <p className="text-sm text-muted-foreground">
-          메모 입력 필드에 텍스트를 입력한 뒤, 아래 버튼을 누르고 다른 브라우저 탭으로
-          이동했다가 돌아와보세요. 이번에는 입력 중이던 내용이 그대로 유지됩니다.
-        </p>
-        <SimulateExternalChangeButton />
-      </div>
     </ExamplePageLayout>
   );
 }

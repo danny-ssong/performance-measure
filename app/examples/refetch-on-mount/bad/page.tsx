@@ -18,12 +18,8 @@ export default function RefetchOnMountBadPage() {
   });
 
   return (
-    <ExamplePageLayout
-      slug="refetch-on-mount"
-      variant="bad"
-      title="refetchOnMount와 invalidateQueries"
-      description="항목을 클릭해서 제목을 수정하고 목록으로 돌아와도 refetchOnMount:false 때문에 예전 제목이 그대로 보입니다."
-    >
+    <ExamplePageLayout>
+      <h1 className="text-2xl font-semibold">할 일 목록</h1>
       {isPending ? (
         <p>불러오는 중...</p>
       ) : (

@@ -55,12 +55,8 @@ export default function RefetchOnMountGoodDetailPage({
   if (!data) return <p>불러오는 중...</p>;
 
   return (
-    <ExamplePageLayout
-      slug="refetch-on-mount"
-      variant="good"
-      title="refetchOnMount와 invalidateQueries"
-      description="refetchType: 'all'로 invalidate하면 목록이 비활성 상태여도 즉시 갱신됩니다."
-    >
+    <ExamplePageLayout>
+      <h1 className="text-2xl font-semibold">할 일 수정</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-2">
           <Label htmlFor="title">제목</Label>
