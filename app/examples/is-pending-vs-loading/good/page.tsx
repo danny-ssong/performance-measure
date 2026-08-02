@@ -12,7 +12,7 @@ type Profile = { id: number; name: string };
 export default function IsPendingVsLoadingGoodPage() {
   const [enabled, setEnabled] = useState(true);
 
-  const { data, isPending } = useQuery<Profile>({
+  const { data, isPending, isError } = useQuery<Profile>({
     queryKey: ["is-pending-vs-loading", "good", "profile"],
     queryFn: async () => {
       const res = await fetch("/api/examples/is-pending-vs-loading");
@@ -34,8 +34,10 @@ export default function IsPendingVsLoadingGoodPage() {
       </div>
       {isPending ? (
         <Skeleton className="h-6 w-40" />
+      ) : isError ? (
+        <p className="text-destructive">불러오지 못했습니다.</p>
       ) : (
-        <p>이름: {data!.name}</p>
+        <p>이름: {data.name}</p>
       )}
     </ExamplePageLayout>
   );
