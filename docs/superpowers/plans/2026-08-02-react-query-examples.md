@@ -1481,19 +1481,15 @@ export default function MutateVsMutateAsyncBadPage() {
   };
 
   return (
-    <ExamplePageLayout
-      slug="mutate-vs-mutate-async"
-      variant="bad"
-      title="mutate vs mutateAsync"
-      description="mutate는 즉시 반환되기 때문에 RHF가 요청 완료 전에 isSubmitting을 false로 바꿔서 버튼이 먼저 활성화됩니다."
-    >
+    <ExamplePageLayout>
+      <h1 className="text-2xl font-semibold">계정 설정</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">이름</Label>
           <Input id="name" {...register("name")} />
         </div>
         <Button type="submit" disabled={isSubmitting}>
-          저장 (2초 소요)
+          저장
         </Button>
       </form>
     </ExamplePageLayout>
@@ -1539,19 +1535,15 @@ export default function MutateVsMutateAsyncGoodPage() {
   };
 
   return (
-    <ExamplePageLayout
-      slug="mutate-vs-mutate-async"
-      variant="good"
-      title="mutate vs mutateAsync"
-      description="mutateAsync를 await하면 RHF가 요청이 끝날 때까지 isSubmitting을 true로 유지합니다."
-    >
+    <ExamplePageLayout>
+      <h1 className="text-2xl font-semibold">계정 설정</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">이름</Label>
           <Input id="name" {...register("name")} />
         </div>
         <Button type="submit" disabled={isSubmitting}>
-          저장 (2초 소요)
+          저장
         </Button>
       </form>
     </ExamplePageLayout>
