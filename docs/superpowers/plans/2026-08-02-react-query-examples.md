@@ -1053,13 +1053,15 @@ git commit -m "feat: is-pending-vs-loading 예제 추가"
 
 ### Task 8: 예제 4 — data-availability-first
 
+> **설계 방향(실제 화면처럼):** "다음 새로고침 실패하게 만들기" 같은 온스크린 토글은 실제 앱에는 없는 개발자용 장치이므로 화면에 두지 않는다. 대신 mock API가 자체적으로 일정 확률(30%)로 실패하게 만들어서, 녹화할 때 "새로고침" 버튼을 몇 번 누르다 보면 자연스럽게 실패 케이스가 나오도록 한다. 화면은 그냥 평범한 "알림" 목록 + 새로고침 버튼이다. (`?fail=true` 쿼리 파라미터는 화면에는 없지만 API 자체에는 남겨둬서, 구현자가 수동 검증할 때 브라우저 주소창에서 직접 붙여 실패를 확정적으로 재현할 수 있게 한다.)
+
 **Files:**
 - Create: `app/api/examples/data-availability-first/route.ts`
 - Create: `app/examples/data-availability-first/bad/page.tsx`
 - Create: `app/examples/data-availability-first/good/page.tsx`
 
 **Interfaces:**
-- Consumes: `ExamplePageLayout` (Task 3), `delay` (Task 2), 전역 `QueryCache.onError` 토스트 (Task 2), shadcn `Switch`/`Label`/`Button` (Task 1)
+- Consumes: `ExamplePageLayout` (Task 3, `{ children }`만 받는 최신 버전), `delay` (Task 2), 전역 `QueryCache.onError` 토스트 (Task 2), shadcn `Button` (Task 1)
 - Produces: 없음
 
 - [ ] **Step 1: mock API 작성**
@@ -1079,8 +1081,9 @@ const notifications = [
 export async function GET(request: Request) {
   await delay(300);
   const { searchParams } = new URL(request.url);
-  const fail = searchParams.get("fail") === "true";
-  if (fail) {
+  const forceFail = searchParams.get("fail") === "true";
+  const randomFail = Math.random() < 0.3;
+  if (forceFail || randomFail) {
     return NextResponse.json({ message: "서버 오류" }, { status: 500 });
   }
   return NextResponse.json(notifications);
@@ -1089,45 +1092,37 @@ export async function GET(request: Request) {
 
 - [ ] **Step 2: bad 페이지 작성**
 
-`app/examples/data-availability-first/bad/page.tsx`:
+`app/examples/data-availability-first/bad/page.tsx` — 화면에는 순수하게 알림 목록 + 새로고침 버튼만 있다. 토글이나 실패 관련 UI는 없다:
 
 ```tsx
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ExamplePageLayout } from "@/components/example-page-layout";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 
 type Notification = { id: number; message: string };
 
 export default function DataAvailabilityFirstBadPage() {
-  const [willFail, setWillFail] = useState(false);
-
   const { data, isPending, isError, refetch, isFetching } = useQuery<Notification[]>({
     queryKey: ["data-availability-first", "bad", "notifications"],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/examples/data-availability-first?fail=${willFail}`,
-      );
+      const res = await fetch("/api/examples/data-availability-first");
       if (!res.ok) throw new Error("요청 실패");
       return res.json();
     },
   });
 
   return (
-    <ExamplePageLayout
-      slug="data-availability-first"
-      variant="bad"
-      title="data-availability-first 패턴"
-      description="새로고침이 실패하면 이미 가지고 있던 목록까지 에러 화면으로 통째로 대체됩니다."
-    >
-      <div className="flex items-center gap-3 rounded-md border border-dashed p-4">
-        <Switch id="willFail" checked={willFail} onCheckedChange={setWillFail} />
-        <Label htmlFor="willFail">다음 새로고침 실패하게 만들기</Label>
-        <Button type="button" onClick={() => refetch()} disabled={isFetching}>
+    <ExamplePageLayout>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">알림</h1>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => refetch()}
+          disabled={isFetching}
+        >
           새로고침
         </Button>
       </div>
@@ -1151,45 +1146,37 @@ export default function DataAvailabilityFirstBadPage() {
 
 - [ ] **Step 3: good 페이지 작성**
 
-`app/examples/data-availability-first/good/page.tsx` — 분기 순서를 `data` 우선으로 변경:
+`app/examples/data-availability-first/good/page.tsx` — 분기 순서만 `data` 우선으로 바꾼다. 화면 구성은 bad와 동일(토글 없음):
 
 ```tsx
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ExamplePageLayout } from "@/components/example-page-layout";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 
 type Notification = { id: number; message: string };
 
 export default function DataAvailabilityFirstGoodPage() {
-  const [willFail, setWillFail] = useState(false);
-
   const { data, isError, refetch, isFetching } = useQuery<Notification[]>({
     queryKey: ["data-availability-first", "good", "notifications"],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/examples/data-availability-first?fail=${willFail}`,
-      );
+      const res = await fetch("/api/examples/data-availability-first");
       if (!res.ok) throw new Error("요청 실패");
       return res.json();
     },
   });
 
   return (
-    <ExamplePageLayout
-      slug="data-availability-first"
-      variant="good"
-      title="data-availability-first 패턴"
-      description="data가 있으면 항상 목록을 우선 보여주고, 백그라운드 실패는 전역 토스트로만 알립니다(Task 2의 QueryCache.onError 참고)."
-    >
-      <div className="flex items-center gap-3 rounded-md border border-dashed p-4">
-        <Switch id="willFail" checked={willFail} onCheckedChange={setWillFail} />
-        <Label htmlFor="willFail">다음 새로고침 실패하게 만들기</Label>
-        <Button type="button" onClick={() => refetch()} disabled={isFetching}>
+    <ExamplePageLayout>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">알림</h1>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => refetch()}
+          disabled={isFetching}
+        >
           새로고침
         </Button>
       </div>
@@ -1222,10 +1209,10 @@ Expected: 에러 없이 성공.
 Run: `npm run dev`
 
 1. `/examples/data-availability-first/bad` 접속 → 목록이 보임
-2. "다음 새로고침 실패하게 만들기" 스위치 켜고 "새로고침" 클릭
-3. Expected: 목록이 사라지고 "불러오지 못했습니다." 에러 화면으로 대체됨 (전역 토스트도 함께 뜰 수 있음)
-4. `/examples/data-availability-first/good`에서 동일하게 재현
-5. Expected: 목록이 그대로 유지되고 토스트로만 실패가 알려짐
+2. 주소창에 `?fail=true`를 붙여 다시 접속하거나(최초 로드 자체를 실패시켜 API가 실제로 500을 반환하는지만 먼저 확인), 정상 로드된 상태에서 "새로고침" 버튼을 여러 번 눌러 30% 확률로 실패가 발생할 때까지 반복
+3. Expected: 실패가 발생하면 목록이 사라지고 "불러오지 못했습니다." 에러 화면으로 대체됨 (전역 토스트도 함께 뜰 수 있음)
+4. `/examples/data-availability-first/good`에서 동일하게 재현(새로고침 반복)
+5. Expected: 실패가 발생해도 목록이 그대로 유지되고 토스트로만 실패가 알려짐
 
 - [ ] **Step 6: Commit**
 
