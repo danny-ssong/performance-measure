@@ -63,7 +63,7 @@ export default function InvalidateQueriesAwaitGoodPage() {
           <DialogTrigger render={<Button type="button" />}>추가</DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>할 일 추가</DialogTitle>
+              <DialogTitle>메모 추가</DialogTitle>
             </DialogHeader>
             <Input value={content} onChange={(e) => setContent(e.target.value)} />
             <DialogFooter>
