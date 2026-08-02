@@ -16,6 +16,7 @@
 - `bad`/`good` 페이지는 하나의 전역 `QueryClient`(루트 `Providers`)를 공유하므로, 캐시 오염을 막기 위해 모든 `queryKey`의 두 번째 요소에 `'bad'` 또는 `'good'`을 리터럴로 박아넣는다(예: `['refetch-window-focus', 'bad', 'settings']`). `global-invalidate` 예제만 페이지별 로컬 `QueryClient`를 쓰므로 이 규칙에서 예외.
 - 각 예제의 mock API는 모듈 스코프 변수로 상태를 유지하는 in-memory 저장소이며, 서버(dev server) 재시작 시 초기화된다. 여러 route.ts 파일이 상태를 공유해야 하면 같은 폴더에 `store.ts`(HTTP 메서드가 아닌 일반 모듈)를 두고 각 `route.ts`에서 import한다 — Next.js는 `route.ts`에서 HTTP 메서드 핸들러 외의 값을 export하는 것을 허용하지 않는다.
 - shadcn 컴포넌트는 `components/ui/`에 CLI로 생성된 그대로 두고 수정하지 않는다.
+- 이 프로젝트의 shadcn `init -d` 프리셋은 Radix 대신 `@base-ui/react`를 사용한다. 따라서 `Button`/`DialogTrigger` 등을 다른 엘리먼트로 합성할 때는 Radix의 `asChild` + children 패턴이 아니라 Base UI의 `render` prop을 쓴다 — 예: `<Button render={<Link href="/foo" />}>텍스트</Button>` (바깥 컴포넌트의 children이 최종 엘리먼트의 내용이 되고, `render`에 넘긴 엘리먼트가 태그/속성을 제공한다). `asChild`로 작성하면 컴파일도 되고 동작도 하는 것처럼 보이지만 실제로는 두 엘리먼트가 중첩(예: `<button><a>...</a></button>`)되는 것이므로 절대 쓰지 않는다.
 
 ---
 
@@ -314,11 +315,18 @@ export default function Home() {
               <CardDescription>{example.description}</CardDescription>
             </CardHeader>
             <CardFooter className="flex gap-2">
-              <Button asChild variant="destructive" size="sm">
-                <Link href={`/examples/${example.slug}/bad`}>문제 상황 보기</Link>
+              <Button
+                render={<Link href={`/examples/${example.slug}/bad`} />}
+                variant="destructive"
+                size="sm"
+              >
+                문제 상황 보기
               </Button>
-              <Button asChild size="sm">
-                <Link href={`/examples/${example.slug}/good`}>해결 방법 보기</Link>
+              <Button
+                render={<Link href={`/examples/${example.slug}/good`} />}
+                size="sm"
+              >
+                해결 방법 보기
               </Button>
             </CardFooter>
           </Card>
@@ -1738,9 +1746,7 @@ export default function InvalidateQueriesAwaitBadPage() {
       description="onSuccess에서 invalidateQueries를 반환하지 않아서, 목록이 갱신되기 전에 모달이 먼저 닫힙니다."
     >
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button type="button">추가</Button>
-        </DialogTrigger>
+        <DialogTrigger render={<Button type="button" />}>추가</DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>할 일 추가</DialogTitle>
@@ -1835,9 +1841,7 @@ export default function InvalidateQueriesAwaitGoodPage() {
       description="useMutation의 onSuccess에서 invalidateQueries를 반환하면, refetch가 끝난 뒤에야 mutate 호출부의 onSuccess(모달 닫기)가 실행됩니다."
     >
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button type="button">추가</Button>
-        </DialogTrigger>
+        <DialogTrigger render={<Button type="button" />}>추가</DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>할 일 추가</DialogTitle>
@@ -1948,8 +1952,8 @@ export default function CallbackPlacementBadPage() {
         <Button type="button" onClick={() => mutate()} disabled={isPending}>
           저장 (2초 소요)
         </Button>
-        <Button type="button" variant="outline" asChild>
-          <Link href="/">다른 페이지로 이동</Link>
+        <Button type="button" variant="outline" render={<Link href="/" />}>
+          다른 페이지로 이동
         </Button>
       </div>
     </ExamplePageLayout>
@@ -1999,8 +2003,8 @@ export default function CallbackPlacementGoodPage() {
         <Button type="button" onClick={handleSave} disabled={isPending}>
           저장 (2초 소요)
         </Button>
-        <Button type="button" variant="outline" asChild>
-          <Link href="/">다른 페이지로 이동</Link>
+        <Button type="button" variant="outline" render={<Link href="/" />}>
+          다른 페이지로 이동
         </Button>
       </div>
     </ExamplePageLayout>

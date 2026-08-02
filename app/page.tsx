@@ -76,11 +76,18 @@ export default function Home() {
               <CardDescription>{example.description}</CardDescription>
             </CardHeader>
             <CardFooter className="flex gap-2">
-              <Button asChild variant="destructive" size="sm">
-                <Link href={`/examples/${example.slug}/bad`}>문제 상황 보기</Link>
+              <Button
+                render={<Link href={`/examples/${example.slug}/bad`} />}
+                variant="destructive"
+                size="sm"
+              >
+                문제 상황 보기
               </Button>
-              <Button asChild size="sm">
-                <Link href={`/examples/${example.slug}/good`}>해결 방법 보기</Link>
+              <Button
+                render={<Link href={`/examples/${example.slug}/good`} />}
+                size="sm"
+              >
+                해결 방법 보기
               </Button>
             </CardFooter>
           </Card>
