@@ -2057,7 +2057,7 @@ function BadgeCount() {
     },
   });
 
-  return <p>알림 배지: {data?.count ?? "..."}</p>;
+  return <p className="text-muted-foreground">읽지 않은 알림 {data?.count ?? "..."}개</p>;
 }
 
 function SettingsForm() {
@@ -2106,12 +2106,8 @@ export default function GlobalInvalidateBadPage() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ExamplePageLayout
-        slug="global-invalidate"
-        variant="bad"
-        title="전역 invalidate"
-        description="설정을 저장하면 settings 쿼리만 invalidate되어, 함께 갱신되어야 할 배지 카운트는 그대로 남습니다."
-      >
+      <ExamplePageLayout>
+        <h1 className="text-2xl font-semibold">대시보드</h1>
         <BadgeCount />
         <SettingsForm />
       </ExamplePageLayout>
@@ -2152,7 +2148,7 @@ function BadgeCount() {
     },
   });
 
-  return <p>알림 배지: {data?.count ?? "..."}</p>;
+  return <p className="text-muted-foreground">읽지 않은 알림 {data?.count ?? "..."}개</p>;
 }
 
 function SettingsForm() {
@@ -2206,12 +2202,8 @@ export default function GlobalInvalidateGoodPage() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ExamplePageLayout
-        slug="global-invalidate"
-        variant="good"
-        title="전역 invalidate"
-        description="MutationCache의 onSuccess에서 모든 쿼리를 자동으로 invalidate하기 때문에, 설정을 저장하면 배지 카운트도 함께 갱신됩니다."
-      >
+      <ExamplePageLayout>
+        <h1 className="text-2xl font-semibold">대시보드</h1>
         <BadgeCount />
         <SettingsForm />
       </ExamplePageLayout>
