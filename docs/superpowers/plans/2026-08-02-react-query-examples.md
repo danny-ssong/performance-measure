@@ -1678,26 +1678,24 @@ export default function InvalidateQueriesAwaitBadPage() {
   };
 
   return (
-    <ExamplePageLayout
-      slug="invalidate-queries-await"
-      variant="bad"
-      title="invalidateQueries await"
-      description="onSuccess에서 invalidateQueries를 반환하지 않아서, 목록이 갱신되기 전에 모달이 먼저 닫힙니다."
-    >
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger render={<Button type="button" />}>추가</DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>할 일 추가</DialogTitle>
-          </DialogHeader>
-          <Input value={content} onChange={(e) => setContent(e.target.value)} />
-          <DialogFooter>
-            <Button type="button" onClick={handleSubmit} disabled={isPending}>
-              저장
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+    <ExamplePageLayout>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">체크리스트</h1>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger render={<Button type="button" />}>추가</DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>할 일 추가</DialogTitle>
+            </DialogHeader>
+            <Input value={content} onChange={(e) => setContent(e.target.value)} />
+            <DialogFooter>
+              <Button type="button" onClick={handleSubmit} disabled={isPending}>
+                저장
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
       <ul className="flex flex-col gap-2">
         {data?.map((todo) => (
           <li key={todo.id} className="rounded-md border p-3">
@@ -1773,26 +1771,24 @@ export default function InvalidateQueriesAwaitGoodPage() {
   };
 
   return (
-    <ExamplePageLayout
-      slug="invalidate-queries-await"
-      variant="good"
-      title="invalidateQueries await"
-      description="useMutation의 onSuccess에서 invalidateQueries를 반환하면, refetch가 끝난 뒤에야 mutate 호출부의 onSuccess(모달 닫기)가 실행됩니다."
-    >
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger render={<Button type="button" />}>추가</DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>할 일 추가</DialogTitle>
-          </DialogHeader>
-          <Input value={content} onChange={(e) => setContent(e.target.value)} />
-          <DialogFooter>
-            <Button type="button" onClick={handleSubmit} disabled={isPending}>
-              저장
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+    <ExamplePageLayout>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">체크리스트</h1>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger render={<Button type="button" />}>추가</DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>할 일 추가</DialogTitle>
+            </DialogHeader>
+            <Input value={content} onChange={(e) => setContent(e.target.value)} />
+            <DialogFooter>
+              <Button type="button" onClick={handleSubmit} disabled={isPending}>
+                저장
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
       <ul className="flex flex-col gap-2">
         {data?.map((todo) => (
           <li key={todo.id} className="rounded-md border p-3">
