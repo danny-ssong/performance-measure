@@ -9,7 +9,7 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 
 const EXAMPLES = [
-  { slug: "refetch-window-focus", title: "설정" },
+  { slug: "refetch-window-focus", title: "프로필 수정" },
   { slug: "refetch-on-mount", title: "할 일 목록" },
   { slug: "is-pending-vs-loading", title: "내 프로필" },
   { slug: "data-availability-first", title: "알림" },

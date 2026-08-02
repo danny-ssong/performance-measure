@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
 import { delay } from "@/lib/delay";
 
-let settings = {
-  companyName: "가비아",
-  memo: "초기 메모입니다.",
+let profile = {
+  nickname: "가비아유저",
+  introduction: "안녕하세요, 잘 부탁드립니다.",
 };
 
 export async function GET() {
   await delay(300);
-  return NextResponse.json(settings);
+  return NextResponse.json(profile);
 }
 
 export async function PATCH(request: Request) {
   const body = await request.json();
-  settings = { ...settings, ...body };
+  profile = { ...profile, ...body };
   await delay(300);
-  return NextResponse.json(settings);
+  return NextResponse.json(profile);
 }
