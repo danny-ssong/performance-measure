@@ -16,6 +16,7 @@
 - `bad`/`good` 페이지는 하나의 전역 `QueryClient`(루트 `Providers`)를 공유하므로, 캐시 오염을 막기 위해 모든 `queryKey`의 두 번째 요소에 `'bad'` 또는 `'good'`을 리터럴로 박아넣는다(예: `['refetch-window-focus', 'bad', 'settings']`). `global-invalidate` 예제만 페이지별 로컬 `QueryClient`를 쓰므로 이 규칙에서 예외.
 - 각 예제의 mock API는 모듈 스코프 변수로 상태를 유지하는 in-memory 저장소이며, 서버(dev server) 재시작 시 초기화된다. 여러 route.ts 파일이 상태를 공유해야 하면 같은 폴더에 `store.ts`(HTTP 메서드가 아닌 일반 모듈)를 두고 각 `route.ts`에서 import한다 — Next.js는 `route.ts`에서 HTTP 메서드 핸들러 외의 값을 export하는 것을 허용하지 않는다.
 - shadcn 컴포넌트는 `components/ui/`에 CLI로 생성된 그대로 두고 수정하지 않는다.
+- `@tanstack/react-query` v5에서 `isPending`만으로는 `data`가 완전히 좁혀지지(narrow) 않는다 — 한 번도 성공한 적 없이 에러가 난 상태도 `isPending: false`이면서 `data: undefined`이기 때문이다. `data`를 옵셔널 체이닝(`?.`) 없이 접근하려면 반드시 `isPending`과 `isError`를 함께 분기해야 한다. `as` 캐스팅과 non-null assertion(`!`)은 전역 규칙(`~/.claude/rules/coding-style.md`)에서 금지되어 있으므로, 타입 에러가 나면 `!`로 우회하지 말고 `isError` 분기를 추가해서 해결한다.
 - 이 프로젝트의 shadcn `init -d` 프리셋은 Radix 대신 `@base-ui/react`를 사용한다. 따라서 `Button`/`DialogTrigger` 등을 다른 엘리먼트로 합성할 때는 Radix의 `asChild` + children 패턴이 아니라 Base UI의 `render` prop을 쓴다 — 예: `<DialogTrigger render={<Button />}>텍스트</DialogTrigger>` (바깥 컴포넌트의 children이 최종 엘리먼트의 내용이 되고, `render`에 넘긴 엘리먼트가 태그/속성을 제공한다). `asChild`로 작성하면 컴파일도 되고 동작도 하는 것처럼 보이지만 실제로는 두 엘리먼트가 중첩(예: `<button><a>...</a></button>`)되는 것이므로 절대 쓰지 않는다.
 - **링크를 버튼처럼 보이게 스타일링할 때는 `Button`으로 감싸지 않는다.** Base UI의 `Button`은 버튼 시맨틱을 강제하도록 설계되어 있어 링크 용도로 감싸는 것을 문서에서 명시적으로 권장하지 않으며(개발 모드 콘솔 경고 발생, `type="button"` 속성이 `<a>`에 그대로 남는 등 부작용 있음), 실제로도 `nativeButton={false}`를 추가로 지정해야 경고가 사라진다. 대신 `@/components/ui/button`이 내보내는 `buttonVariants(...)` 헬퍼로 얻은 클래스명을 `Link`에 직접 적용한다 — 예: `<Link href="/foo" className={buttonVariants({ variant: "destructive", size: "sm" })}>텍스트</Link>`.
 
@@ -1026,7 +1027,7 @@ type Profile = { id: number; name: string };
 export default function IsPendingVsLoadingGoodPage() {
   const [enabled, setEnabled] = useState(true);
 
-  const { data, isPending } = useQuery<Profile>({
+  const { data, isPending, isError } = useQuery<Profile>({
     queryKey: ["is-pending-vs-loading", "good", "profile"],
     queryFn: async () => {
       const res = await fetch("/api/examples/is-pending-vs-loading");
@@ -1048,6 +1049,8 @@ export default function IsPendingVsLoadingGoodPage() {
       </div>
       {isPending ? (
         <Skeleton className="h-6 w-40" />
+      ) : isError ? (
+        <p className="text-destructive">불러오지 못했습니다.</p>
       ) : (
         <p>이름: {data.name}</p>
       )}
@@ -1056,13 +1059,13 @@ export default function IsPendingVsLoadingGoodPage() {
 }
 ```
 
-`isPending`이 `true`인 동안에는 `data`가 항상 `undefined`이고, `false`가 되는 순간에는 타입 좁히기(narrowing)로 `data`가 `Profile`로 보장되므로 `data.name`에 `?.` 없이 안전하게 접근할 수 있다 — 이것이 "안전한 접근" 부분의 데모다. `enabled=false`일 때는 `isPending`이 계속 `true`로 유지되어 스켈레톤이 계속 보인다(무한 로딩처럼 보일 수 있다는 점도 트레이드오프로 남는데, 화면에 "쿼리가 비활성화되어 있습니다" 같은 문구를 추가하고 싶다면 `enabled` 상태를 직접 분기에 반영해도 된다 — 여기서는 `isPending` vs `isLoading`의 핵심 차이만 보여주는 것이 목적이므로 최소 구현으로 둔다).
+`isPending`이 `true`인 동안에는 `data`가 항상 `undefined`이다. `isPending`이 `false`라고 해서 `data`가 항상 정의되어 있는 것은 아니다 — 한 번도 성공한 적 없이 에러가 난 경우에도 `isPending`은 `false`이고 `data`는 여전히 `undefined`이기 때문이다(`@tanstack/react-query`의 `QueryObserverResult` 유니온에 그런 멤버가 실제로 존재한다). 그래서 `isError`까지 함께 체크해야 그 다음 분기에서 타입 좁히기(narrowing)로 `data`가 `Profile`로 완전히 보장되고, `data.name`에 `?.`나 `!` 없이 안전하게 접근할 수 있다 — 이것이 "안전한 접근" 부분의 데모다. 이 mock API는 실제로는 에러를 내지 않으므로 `isError` 분기는 화면에 보이지 않지만, 타입스크립트가 이를 알 수 없기 때문에 이 분기가 있어야만 타입 에러 없이 컴파일된다. `enabled=false`일 때는 `isPending`이 계속 `true`로 유지되어 스켈레톤이 계속 보인다(무한 로딩처럼 보일 수 있다는 점도 트레이드오프로 남는데, 화면에 "쿼리가 비활성화되어 있습니다" 같은 문구를 추가하고 싶다면 `enabled` 상태를 직접 분기에 반영해도 된다 — 여기서는 `isPending` vs `isLoading`의 핵심 차이만 보여주는 것이 목적이므로 최소 구현으로 둔다).
 
 - [ ] **Step 4: 빌드로 타입 체크**
 
 Run: `npm run build`
 
-Expected: 에러 없이 성공 (good 페이지의 `data.name`은 `isPending` 분기 덕분에 타입 에러 없음).
+Expected: 에러 없이 성공 (good 페이지의 `data.name`은 `isPending` + `isError` 분기 덕분에 타입 에러 없음. `isPending` 체크만으로는 좁혀지지 않는다 — non-null assertion(`!`)이나 `?.`를 추가하지 말고 반드시 `isError` 분기를 함께 둘 것).
 
 - [ ] **Step 5: 개발 서버에서 수동 검증**
 
