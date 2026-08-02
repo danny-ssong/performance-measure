@@ -17,7 +17,9 @@ export default function DataAvailabilityFirstGoodPage() {
   const { data, isError, refetch, isFetching } = useQuery<Notification[]>({
     queryKey: ["data-availability-first", "good", "notifications"],
     queryFn: async () => {
-      const res = await fetch(`/api/examples/data-availability-first?fail=${fail}`);
+      const res = await fetch(
+        `/api/examples/data-availability-first?variant=good&fail=${fail}`,
+      );
       if (!res.ok) throw new Error("요청 실패");
       return res.json();
     },

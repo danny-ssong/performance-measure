@@ -8,13 +8,13 @@ let todos = [
 let nextId = 3;
 
 export async function GET() {
-  await delay(500);
+  await delay(2500);
   return NextResponse.json(todos);
 }
 
 export async function POST(request: Request) {
   const body = await request.json();
-  await delay(500);
+  await delay(2500);
   const todo = { id: nextId, content: body.content };
   nextId += 1;
   todos = [...todos, todo];
