@@ -1872,23 +1872,19 @@ export default function CallbackPlacementBadPage() {
       return res.json();
     },
     onSuccess: () => {
-      toast.success("저장되었습니다. (2초 후 표시됨)");
+      toast.success("저장되었습니다.");
     },
   });
 
   return (
-    <ExamplePageLayout
-      slug="callback-placement"
-      variant="bad"
-      title="뮤테이션 콜백 위치"
-      description="저장 버튼을 누르고 바로 다른 페이지로 이동해보세요. useMutation의 onSuccess는 언마운트 후에도 실행되어, 이미 떠난 화면에서 토스트가 뜹니다."
-    >
+    <ExamplePageLayout>
+      <h1 className="text-2xl font-semibold">환경설정</h1>
       <div className="flex gap-3">
         <Button type="button" onClick={() => mutate()} disabled={isPending}>
-          저장 (2초 소요)
+          저장
         </Button>
         <Link href="/" className={buttonVariants({ variant: "outline" })}>
-          다른 페이지로 이동
+          취소
         </Link>
       </div>
     </ExamplePageLayout>
@@ -1922,24 +1918,20 @@ export default function CallbackPlacementGoodPage() {
   const handleSave = () => {
     mutate(undefined, {
       onSuccess: () => {
-        toast.success("저장되었습니다. (2초 후 표시됨)");
+        toast.success("저장되었습니다.");
       },
     });
   };
 
   return (
-    <ExamplePageLayout
-      slug="callback-placement"
-      variant="good"
-      title="뮤테이션 콜백 위치"
-      description="저장 버튼을 누르고 바로 다른 페이지로 이동해보세요. mutate 호출부의 onSuccess는 언마운트 후 실행되지 않아 토스트가 뜨지 않습니다."
-    >
+    <ExamplePageLayout>
+      <h1 className="text-2xl font-semibold">환경설정</h1>
       <div className="flex gap-3">
         <Button type="button" onClick={handleSave} disabled={isPending}>
-          저장 (2초 소요)
+          저장
         </Button>
         <Link href="/" className={buttonVariants({ variant: "outline" })}>
-          다른 페이지로 이동
+          취소
         </Link>
       </div>
     </ExamplePageLayout>
@@ -1957,7 +1949,7 @@ Expected: 에러 없이 성공.
 
 Run: `npm run dev`
 
-1. `/examples/callback-placement/bad`에서 "저장" 클릭 직후 바로 "다른 페이지로 이동" 클릭 (홈으로 이동)
+1. `/examples/callback-placement/bad`에서 "저장" 클릭 직후 바로 "취소" 클릭 (홈으로 이동)
 2. Expected: 홈 화면에 있는 상태에서 2초 후 "저장되었습니다" 토스트가 뜸
 3. `/examples/callback-placement/good`에서 동일하게 재현
 4. Expected: 홈으로 이동한 뒤에는 토스트가 뜨지 않음
