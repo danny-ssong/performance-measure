@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# 성능 측정 결과 (e2e/order-grid/responsiveness-summary-reporter.ts)
+/perf-results/

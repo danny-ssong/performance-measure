@@ -1,28 +1,20 @@
 import { NextResponse } from "next/server";
 import { delay } from "@/lib/delay";
-
-let todos = [
-  { id: 1, content: "첫 번째 할 일" },
-  { id: 2, content: "두 번째 할 일" },
-];
-let nextId = 3;
+import { addTodo, clearTodos, getTodos } from "./store";
 
 export async function GET() {
   await delay(2500);
-  return NextResponse.json(todos);
+  return NextResponse.json(getTodos());
 }
 
 export async function POST(request: Request) {
   const body = await request.json();
-  await delay(2500);
-  const todo = { id: nextId, content: body.content };
-  nextId += 1;
-  todos = [...todos, todo];
+  await delay(500);
+  const todo = addTodo(body.content);
   return NextResponse.json(todo);
 }
 
 export async function DELETE() {
-  todos = [];
-  nextId = 1;
+  clearTodos();
   return NextResponse.json({ ok: true });
 }

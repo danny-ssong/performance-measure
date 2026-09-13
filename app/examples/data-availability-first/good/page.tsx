@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { ExamplePageLayout } from "@/components/example-page-layout";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ export default function DataAvailabilityFirstGoodPage() {
       if (!res.ok) throw new Error("요청 실패");
       return res.json();
     },
+    meta: { notifyOnBackgroundError: true },
   });
 
   return (
@@ -41,8 +43,13 @@ export default function DataAvailabilityFirstGoodPage() {
       {data ? (
         <ul className="flex flex-col gap-2">
           {data.map((n) => (
-            <li key={n.id} className="rounded-md border p-3">
-              {n.message}
+            <li key={n.id}>
+              <Link
+                href={`/examples/data-availability-first/good/${n.id}`}
+                className="block rounded-md border p-3 hover:bg-accent"
+              >
+                {n.message}
+              </Link>
             </li>
           ))}
         </ul>
@@ -51,6 +58,19 @@ export default function DataAvailabilityFirstGoodPage() {
       ) : (
         <p>불러오는 중...</p>
       )}
+      <Button
+        type="button"
+        variant="outline"
+        className="fixed right-6 bottom-6"
+        onClick={async () => {
+          await fetch("/api/examples/data-availability-first?variant=good", {
+            method: "DELETE",
+          });
+          window.location.reload();
+        }}
+      >
+        테스트 초기화
+      </Button>
     </ExamplePageLayout>
   );
 }

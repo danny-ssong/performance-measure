@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { ExamplePageLayout } from "@/components/example-page-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ export default function MutateVsMutateAsyncGoodPage() {
 
   const onSubmit = async (values: ProfileForm) => {
     await mutateAsync(values.name);
+    toast.info("저장되었습니다.");
   };
 
   return (
@@ -36,9 +38,9 @@ export default function MutateVsMutateAsyncGoodPage() {
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">이름</Label>
-          <Input id="name" {...register("name")} />
+          <Input id="name" className="w-[300px]" {...register("name")} />
         </div>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting} className="w-[300px]">
           저장
         </Button>
       </form>

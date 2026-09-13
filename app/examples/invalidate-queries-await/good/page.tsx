@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ExamplePageLayout } from "@/components/example-page-layout";
@@ -89,8 +90,13 @@ export default function InvalidateQueriesAwaitGoodPage() {
       </div>
       <ul className="flex flex-col gap-2">
         {data?.map((todo) => (
-          <li key={todo.id} className="rounded-md border p-3">
-            {todo.content}
+          <li key={todo.id}>
+            <Link
+              href={`/examples/invalidate-queries-await/good/${todo.id}`}
+              className="block rounded-md border p-3 hover:bg-accent"
+            >
+              {todo.content}
+            </Link>
           </li>
         ))}
       </ul>

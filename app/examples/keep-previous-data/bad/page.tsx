@@ -6,6 +6,7 @@ import { ExamplePageLayout } from "@/components/example-page-layout";
 import { Button } from "@/components/ui/button";
 
 type PageResult = { items: string[]; page: number; totalPages: number };
+type PageMeta = { totalPages: number };
 
 export default function KeepPreviousDataBadPage() {
   const [page, setPage] = useState(1);
@@ -16,6 +17,15 @@ export default function KeepPreviousDataBadPage() {
       const res = await fetch(`/api/examples/keep-previous-data?page=${page}`);
       return res.json();
     },
+  });
+
+  const { data: meta } = useQuery<PageMeta>({
+    queryKey: ["keep-previous-data", "meta"],
+    queryFn: async () => {
+      const res = await fetch("/api/examples/keep-previous-data/meta");
+      return res.json();
+    },
+    staleTime: Infinity,
   });
 
   return (
@@ -42,12 +52,12 @@ export default function KeepPreviousDataBadPage() {
           이전
         </Button>
         <span>
-          {page} / {data?.totalPages ?? "?"}
+          {page} / {meta?.totalPages ?? "?"}
         </span>
         <Button
           type="button"
           variant="outline"
-          disabled={data ? page >= data.totalPages : true}
+          disabled={meta ? page >= meta.totalPages : true}
           onClick={() => setPage((p) => p + 1)}
         >
           다음

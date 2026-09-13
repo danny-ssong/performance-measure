@@ -12,8 +12,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         queryCache: new QueryCache({
           onError: (_error, query) => {
-            if (query.state.data !== undefined) {
-              toast.error('데이터 최신화에 실패했습니다.')
+            if (query.meta?.notifyOnBackgroundError && query.state.data !== undefined) {
+              toast.warning('데이터 최신화에 실패했습니다.')
             }
           },
         }),
